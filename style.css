@@ -13,14 +13,14 @@ table{
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 th, td{
-    border: 1px solid rgb(227, 149, 149);
+    border: 1px solid rgb(247, 233, 233);
     width: 90px;
     height: 32px;
     text-align: center;
     padding: 0% 6px;
 }
 th{
-    background-color: rgb(172, 138, 107);
+    background-color: rgb(234, 185, 139);
     color: black;
     font-weight: 600;
     position: sticky;
@@ -113,6 +113,7 @@ table {
 .dropdown-option:hover {
   background-color: #eef3f8;
 }
+
 .table-container {
     width: 100%;
     overflow-x: auto;
