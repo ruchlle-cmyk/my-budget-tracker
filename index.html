@@ -207,6 +207,23 @@ function sumRange(startRef, endRef) {
   }
   return total;
 }
+// Example touch handler for selecting cells on mobile
+table.addEventListener('touchstart', (e) => {
+    let touch = e.touches[0];
+    let target = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (target && target.tagName === 'TD') {
+        // Start your cell selection logic here
+    }
+});
+
+table.addEventListener('touchmove', (e) => {
+    e.preventDefault(); // Prevents page scrolling while dragging across cells
+    let touch = e.touches[0];
+    let target = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (target && target.tagName === 'TD') {
+        // Highlight/select the target cell
+    }
+});
 </script>
   </body>
 </html>
