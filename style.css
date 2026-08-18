@@ -115,8 +115,8 @@ table {
 }
 
 #sheet td {
-    touch-action: none; /* Allows dragging across cells on touchscreens */
-    user-select: none; /* Stops text selection highlight popping up */
+  touch-action: auto; /* Allows default touch behavior (scrolling) */
+  user-select: none;
 }
 
 .table-container {
