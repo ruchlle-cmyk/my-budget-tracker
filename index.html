@@ -207,22 +207,44 @@ function sumRange(startRef, endRef) {
   }
   return total;
 }
-// Example touch handler for selecting cells on mobile
-table.addEventListener('touchstart', (e) => {
-    let touch = e.touches[0];
-    let target = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (target && target.tagName === 'TD') {
-        // Start your cell selection logic here
-    }
+const table = document.getElementById('sheet');
+let currentCell = null;
+
+// Selects cell and updates highlight class
+function select(cell) {
+    if (!cell || cell.tagName !== 'TD' || cell.cellIndex === 0) return;
+    document.querySelectorAll('.selected-cell').forEach(td => td.classList.remove('selected-cell'));
+    (currentCell = cell).classList.add('selected-cell');
+}
+
+// Helper to find cell under mouse cursor or finger touch
+function getTarget(e) {
+    const t = e.touches ? e.touches[0] : e;
+    return document.elementFromPoint(t.clientX, t.clientY);
+}
+
+// Mouse & Touch Drag Handler
+['mousedown', 'touchstart', 'mousemove', 'touchmove'].forEach(type => {
+    table.addEventListener(type, (e) => {
+        if (e.buttons === 1 || e.type.startsWith('touch')) {
+            if (e.type === 'touchmove') e.preventDefault(); // Prevents page scroll on touch drag
+            select(getTarget(e));
+        }
+    }, { passive: false });
 });
 
-table.addEventListener('touchmove', (e) => {
-    e.preventDefault(); // Prevents page scrolling while dragging across cells
-    let touch = e.touches[0];
-    let target = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (target && target.tagName === 'TD') {
-        // Highlight/select the target cell
-    }
+// Laptop Arrow Keys Navigation
+document.addEventListener('keydown', (e) => {
+    if (!currentCell || !e.key.startsWith('Arrow')) return;
+    let r = currentCell.parentElement.rowIndex, c = currentCell.cellIndex;
+
+    if (e.key === 'ArrowUp') r = Math.max(1, r - 1);
+    if (e.key === 'ArrowDown') r = Math.min(table.rows.length - 1, r + 1);
+    if (e.key === 'ArrowLeft') c = Math.max(1, c - 1);
+    if (e.key === 'ArrowRight') c = Math.min(table.rows[0].cells.length - 1, c + 1);
+
+    e.preventDefault();
+    select(table.rows[r].cells[c]);
 });
 </script>
   </body>
