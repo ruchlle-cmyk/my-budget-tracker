@@ -34,7 +34,7 @@ td:first-child, th:first-child{
 }
 
 td[contenteditable="true"] {
-  background-color: white;
+  background-color: black;
   transition: background-color 0.15s ease;
 }
 
