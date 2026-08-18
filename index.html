@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Budget Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>My Spreadsheet</h1>
+    <div class="menubar">
+  <div class="menu-item">File
+    <div class="dropdown">
+      <div class="dropdown-option" onclick="alert('Save clicked')">Save</div>
+      <div class="dropdown-option" onclick="alert('New clicked')">New</div>
+    </div>
+  </div>
+  <div class="menu-item">Edit
+    <div class="dropdown">
+      <div class="dropdown-option" onclick="clearSelectedCells()">Clear selected cells</div>
+    </div>
+  </div>
+  <div class="menu-item">View</div>
+  <div class="menu-item">Insert</div>
+  <div class="menu-item">Format</div>
+  <div class="menu-item">Data</div>
+  <div class="menu-item">Tools</div>
+  <div class="menu-item">Help</div>
+</div>
+    <table id="sheet" border="1"></table>
+
+    <script>
+    const rows = 20;
+const cols = 26;
+const table = document.getElementById('sheet');
+const cellData = {};
+let isDragging = false;
+let selectionStart = null;
+function clearSelectedCells() {
+  document.querySelectorAll('.selected-cell').forEach(td => {
+    td.textContent = '';
+    delete cellData[td.id];
+  });
+  recalculateAll();
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+        clearSelectedCells();
+    }
+});
+const headerRow = document.createElement('tr');
+headerRow.innerHTML = '<th></th>';
+for (let c = 0; c < cols; c++) {
+  const th = document.createElement('th');
+  th.textContent = String.fromCharCode(65 + c);
+  headerRow.appendChild(th);
+}
+table.appendChild(headerRow);
+
+for (let r = 1; r <= rows; r++) {
+  const tr = document.createElement('tr');
+  const rowLabel = document.createElement('th');
+  rowLabel.textContent = r;
+  tr.appendChild(rowLabel);
+
+  for (let c = 0; c < cols; c++) {
+    const colLetter = String.fromCharCode(65 + c);
+    const cellId = colLetter + r;
+
+    const td = document.createElement('td');
+    td.contentEditable = true;
+    td.id = cellId;
+
+    td.addEventListener('blur', () => {
+      cellData[cellId] = td.textContent;
+      recalculateAll();
+    });
+
+    td.addEventListener('keydown', (e) => {
+      const col = cellId.charCodeAt(0);
+      const row = parseInt(cellId.slice(1));
+      let targetId = null;
+
+      if (e.key === 'ArrowUp') {
+        targetId = String.fromCharCode(col) + (row - 1);
+      } else if (e.key === 'ArrowDown') {
+        targetId = String.fromCharCode(col) + (row + 1);
+      } else if (e.key === 'ArrowLeft') {
+        targetId = String.fromCharCode(col - 1) + row;
+      } else if (e.key === 'ArrowRight') {
+        targetId = String.fromCharCode(col + 1) + row;
+      } else if (e.key === 'Enter') {
+        targetId = String.fromCharCode(col) + (row + 1);
+      }
+
+      if (targetId && document.getElementById(targetId)) {
+  e.preventDefault();
+
+  if (e.shiftKey && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+    if (!selectionStart) selectionStart = cellId;
+    highlightRange(selectionStart, targetId);
+    document.getElementById(targetId).focus();
+  } else {
+    selectionStart = targetId;
+    highlightRange(targetId, targetId);
+    document.getElementById(targetId).focus();
+  }
+}
+    });
+    td.addEventListener('focus', () => {
+        document.querySelectorAll('.active-header').forEach(el => {
+          el.classList.remove('active-header');
+        });
+
+        const colLetter = cellId.match(/[A-Z]+/)[0];
+        const rowNum = cellId.match(/\d+/)[0];
+
+        document.querySelectorAll('th').forEach(th => {
+          if (th.textContent === colLetter || th.textContent === rowNum) {
+            th.classList.add('active-header');
+          }
+        });
+      });
+      td.addEventListener('mousedown', () => {
+        isDragging = true;
+        selectionStart = cellId;
+        highlightRange(cellId, cellId);
+      });
+
+      td.addEventListener('mouseover', () => {
+        if (isDragging) {
+          highlightRange(selectionStart, cellId);
+        }
+      });
+
+      td.addEventListener('mouseup', () => {
+        isDragging = false;
+      });
+    tr.appendChild(td);
+  }
+  table.appendChild(tr);
+}
+function highlightRange(startId, endId) {
+      document.querySelectorAll('.selected-cell').forEach(el => {
+        el.classList.remove('selected-cell');
+      });
+
+      const startCol = startId.charCodeAt(0);
+      const startRow = parseInt(startId.slice(1));
+      const endCol = endId.charCodeAt(0);
+      const endRow = parseInt(endId.slice(1));
+
+      const minCol = Math.min(startCol, endCol);
+      const maxCol = Math.max(startCol, endCol);
+      const minRow = Math.min(startRow, endRow);
+      const maxRow = Math.max(startRow, endRow);
+
+      for (let c = minCol; c <= maxCol; c++) {
+        for (let r = minRow; r <= maxRow; r++) {
+          const id = String.fromCharCode(c) + r;
+          const cell = document.getElementById(id);
+          if (cell) cell.classList.add('selected-cell');
+        }
+      }
+    }
+function recalculateAll() {
+  for (const cellId in cellData) {
+    const raw = cellData[cellId];
+    const cell = document.getElementById(cellId);
+
+    if (raw.startsWith('=')) {
+      try {
+        let expression = raw.slice(1).toUpperCase();
+
+        expression = expression.replace(/SUM\(([A-Z]\d+):([A-Z]\d+)\)/g, (match, start, end) => {
+          return sumRange(start, end);
+        });
+
+        expression = expression.replace(/[A-Z]\d+/g, (ref) => {
+          const val = parseFloat(cellData[ref]) || 0;
+          return val;
+        });
+
+        cell.textContent = eval(expression);
+      } catch (e) {
+        cell.textContent = '#ERR';
+      }
+    } else {
+      cell.textContent = raw;
+    }
+  }
+}
+
+function sumRange(startRef, endRef) {
+  const startCol = startRef.charCodeAt(0);
+  const startRow = parseInt(startRef.slice(1));
+  const endCol = endRef.charCodeAt(0);
+  const endRow = parseInt(endRef.slice(1));
+
+  let total = 0;
+  for (let c = startCol; c <= endCol; c++) {
+    for (let r = startRow; r <= endRow; r++) {
+      const ref = String.fromCharCode(c) + r;
+      total += parseFloat(cellData[ref]) || 0;
+    }
+  }
+  return total;
+}
+</script>
+  </body>
+</html>
+</body>
+</html>
