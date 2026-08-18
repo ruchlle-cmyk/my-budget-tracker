@@ -114,14 +114,14 @@ table {
   background-color: #eef3f8;
 }
 
+#sheet td {
+    touch-action: none; /* Allows dragging across cells on touchscreens */
+    user-select: none; /* Stops text selection highlight popping up */
+}
+
 .table-container {
     width: 100%;
     max-height: 80vh;
-    overflow: auto; /* Allows scrolling left-right and up-down */
+    overflow: auto; /* Allows regular scrolling when touching outside cells */
     -webkit-overflow-scrolling: touch;
-}
-
-#sheet {
-    user-select: none; /* Stops default text highlighting menu */
-    touch-action: auto; /* Restores touch scrolling */
 }
