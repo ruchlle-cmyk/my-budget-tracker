@@ -13,7 +13,7 @@ table{
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 th, td{
-    border: 1px solid rgb(247, 233, 233);
+    border: 1px solid #d0d7de;
     width: 90px;
     height: 32px;
     text-align: center;
