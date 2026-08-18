@@ -21,14 +21,14 @@ th, td{
 }
 th{
     background-color: #f3d2a8;
-    color: white;
+    color: black;
     font-weight: 600;
     position: sticky;
     top: 0;
 }
 td:first-child, th:first-child{
     background-color: #eca28d;
-    color: white;
+    color: black;
     font-weight: 600;
     width: 40px;
 }
