@@ -116,11 +116,12 @@ table {
 
 .table-container {
     width: 100%;
-    overflow-x: auto;
+    max-height: 80vh;
+    overflow: auto; /* Allows scrolling left-right and up-down */
     -webkit-overflow-scrolling: touch;
 }
 
 #sheet {
-    touch-action: none; /* Disables default touch gestures over the table */
-    user-select: none; /* Prevents text highlighting menu from popping up */
+    user-select: none; /* Stops default text highlighting menu */
+    touch-action: auto; /* Restores touch scrolling */
 }
