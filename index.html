@@ -228,7 +228,7 @@ function getTarget(e) {
     table.addEventListener(type, (e) => {
         if (e.buttons === 1 || e.type.startsWith('touch')) {
             if (e.type === 'touchmove') e.preventDefault();
-            select(getTarget(e));
+            select(getTarget(e)); // Runs for BOTH touchstart and touchmove!
         }
     }, { passive: false });
 });
