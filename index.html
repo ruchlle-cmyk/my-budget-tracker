@@ -227,7 +227,7 @@ function getTarget(e) {
 ['mousedown', 'touchstart', 'mousemove', 'touchmove'].forEach(type => {
     table.addEventListener(type, (e) => {
         if (e.buttons === 1 || e.type.startsWith('touch')) {
-            if (e.type === 'touchmove') e.preventDefault(); // Prevents page scroll on touch drag
+            if (e.type === 'touchmove') e.preventDefault();
             select(getTarget(e));
         }
     }, { passive: false });
