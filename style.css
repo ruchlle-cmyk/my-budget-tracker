@@ -27,8 +27,8 @@ th{
     top: 0;
 }
 td:first-child, th:first-child{
-    background-color: #d98e79;
-    color: black;
+    background-color: #34495e;
+    color: white;
     font-weight: 600;
     width: 40px;
 }
